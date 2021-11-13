@@ -8,6 +8,14 @@ services:
       - "3333:3333"
     depends_on:
       - postgresqldb
+  user-service:
+    container_name: user-service
+    image: user-service
+    build: ./user-service/.
+    ports:
+      - "3335:3335"
+    depends_on:
+      - mongodb
   eureka-server:
     container_name: eureka-server
     image: eureka-server
@@ -16,6 +24,15 @@ services:
       - "1111:1111"
     depends_on:
       - product-service
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: furkanergun
+    ports:
+      - "27017:27017"
   postgresqldb:
     image: postgres
     ports:
