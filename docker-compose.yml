@@ -18,6 +18,8 @@ services:
       - "5454:5454"
     depends_on:
       - user-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
   product-service:
     container_name: product-service
     image: product-service
@@ -40,9 +42,6 @@ services:
     build: ./eureka-server/.
     ports:
       - "8761:8761"
-    depends_on:
-      - product-service
-      - user-service
   mongodb:
     container_name: mongodb
     image: mongo
