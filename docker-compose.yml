@@ -10,6 +10,14 @@ services:
       - eureka-server
       - user-service
       - product-service
+  auth-server:
+    container_name: auth-server
+    image: auth-server
+    build: ./auth-server/.
+    ports:
+      - "5454:5454"
+    depends_on:
+      - user-service
   product-service:
     container_name: product-service
     image: product-service
