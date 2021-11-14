@@ -1,5 +1,15 @@
 version: '3.1'
 services:
+  gateway-service:
+    container_name: gateway-service
+    image: gateway-service
+    build: ./gateway-service/.
+    ports:
+      - "5353:5353"
+    depends_on:
+      - eureka-server
+      - user-service
+      - product-service
   product-service:
     container_name: product-service
     image: product-service
@@ -21,9 +31,10 @@ services:
     image: eureka-server
     build: ./eureka-server/.
     ports:
-      - "1111:1111"
+      - "8761:8761"
     depends_on:
       - product-service
+      - user-service
   mongodb:
     container_name: mongodb
     image: mongo
