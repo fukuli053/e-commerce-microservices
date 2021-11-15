@@ -17,13 +17,6 @@ public class UserController {
         return userService.save(user);
     }
 
-//    @GetMapping
-//    public ResponseTemplateVO getUser(
-//            @RequestHeader(value = "id") String userId,
-//            @RequestHeader(value = "role") String role) {
-//        return userService.getUserWithDepartment(userId);
-//    }
-
     @GetMapping(value = "/secure")
     public String getSecure() {
         return "Secure endpoint available";
