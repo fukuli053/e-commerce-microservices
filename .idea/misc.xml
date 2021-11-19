@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://$PROJECT_DIR$/auth-server" />
-    <file type="web" url="file://$PROJECT_DIR$/eureka-server" />
-    <file type="web" url="file://$PROJECT_DIR$/gateway-service" />
-    <file type="web" url="file://$PROJECT_DIR$/product-service" />
-    <file type="web" url="file://$PROJECT_DIR$/user-service" />
+    <file type="web" url="file://$PROJECT_DIR$/server/auth-server" />
+    <file type="web" url="file://$PROJECT_DIR$/server/eureka-server" />
+    <file type="web" url="file://$PROJECT_DIR$/server/gateway-service" />
+    <file type="web" url="file://$PROJECT_DIR$/server/product-service" />
+    <file type="web" url="file://$PROJECT_DIR$/server/user-service" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="15" project-jdk-type="JavaSDK" />
 </project>

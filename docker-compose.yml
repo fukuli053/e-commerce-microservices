@@ -1,45 +1,56 @@
 version: '3.1'
+
 services:
   gateway-service:
     container_name: gateway-service
     image: gateway-service
-    build: ./gateway-service/.
+    build: ./server/gateway-service/.
     ports:
       - "5353:5353"
     depends_on:
       - eureka-server
       - user-service
       - product-service
+    environment:
+      # Important for clients to register with eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
   auth-server:
     container_name: auth-server
     image: auth-server
-    build: ./auth-server/.
+    build: ./server/auth-server/.
     ports:
       - "5454:5454"
     depends_on:
       - user-service
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      # Important for clients to register with eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
   product-service:
     container_name: product-service
     image: product-service
-    build: ./product-service/.
+    build: ./server/product-service/.
     ports:
       - "3333:3333"
     depends_on:
       - postgresqldb
+    environment:
+      # Important for clients to register with eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
   user-service:
     container_name: user-service
     image: user-service
-    build: ./user-service/.
+    build: ./server/user-service/.
     ports:
       - "3335:3335"
     depends_on:
       - mongodb
+    environment:
+      # Important for clients to register with eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
   eureka-server:
     container_name: eureka-server
     image: eureka-server
-    build: ./eureka-server/.
+    build: ./server/eureka-server/.
     ports:
       - "8761:8761"
   mongodb:
