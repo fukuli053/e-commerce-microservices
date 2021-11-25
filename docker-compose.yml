@@ -1,72 +1,150 @@
 version: '3.1'
 
 services:
-  gateway-service:
-    container_name: gateway-service
-    image: gateway-service
-    build: ./server/gateway-service/.
+  redis-cache:
+    image: redis:alpine
+    container_name: redis-cache-container
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
-      - "5353:5353"
-    depends_on:
-      - eureka-server
-      - user-service
-      - product-service
+      - "6379:6379"
+    networks:
+      - spring-cloud-ecommerce
+
+  mysql-db:
+    image: mysql:8
+    container_name: mysql-db-container
     environment:
-      # Important for clients to register with eureka
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#    volumes:
+#      - ./mysql-db/user.sql:/docker-entrypoint-initdb.d/user.sql
+    ports:
+      - "3312:3306"
+    networks:
+      - spring-cloud-ecommerce
+
   auth-server:
-    container_name: auth-server
-    image: auth-server
-    build: ./server/auth-server/.
-    ports:
-      - "5454:5454"
-    depends_on:
-      - user-service
-    environment:
-      # Important for clients to register with eureka
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-  product-service:
-    container_name: product-service
-    image: product-service
-    build: ./server/product-service/.
-    ports:
-      - "3333:3333"
-    depends_on:
-      - postgresqldb
-    environment:
-      # Important for clients to register with eureka
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-  user-service:
-    container_name: user-service
-    image: user-service
-    build: ./server/user-service/.
-    ports:
-      - "3335:3335"
-    depends_on:
-      - mongodb
-    environment:
-      # Important for clients to register with eureka
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-  eureka-server:
-    container_name: eureka-server
-    image: eureka-server
-    build: ./server/eureka-server/.
-    ports:
-      - "8761:8761"
-  mongodb:
-    container_name: mongodb
-    image: mongo
+    build:
+      context: .
+      dockerfile: ./server/auth-server/Dockerfile
+    container_name: auth-server-container
     restart: always
+    depends_on:
+      - mysql-db
+      - redis-cache
+      - react-ui
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: furkanergun
+      - DB_HOST=mysql-db
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PORT=${AUTHENTICATION_SERVICE_PORT}
+    links:
+      - mysql-db:mysql
+    expose:
+      - ${AUTHENTICATION_SERVICE_PORT}
     ports:
-      - "27017:27017"
-  postgresqldb:
-    image: postgres
+      - ${AUTHENTICATION_SERVICE_PORT}:${AUTHENTICATION_SERVICE_PORT}
+    networks:
+      - spring-cloud-ecommerce
+
+  react-ui:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    container_name: react-service-container
+    stdin_open: true
+    restart: always
+    expose:
+      - ${REACT_APP_PORT}
     ports:
-      - "5432:5432"
+      - ${REACT_APP_PORT}:${REACT_APP_PORT}
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=products
+      - REACT_APP_STRIPE_PUBLISH_KEY=${REACT_APP_STRIPE_PUBLISH_KEY}
+      - REACT_APP_COMMON_DATA_SERVICE_PORT=${COMMON_DATA_SERVICE_PORT}
+      - REACT_APP_ENVIRONMENT=${REACT_APP_ENVIRONMENT}
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mysql-db
+      - redis-cache
+    networks:
+      - spring-cloud-ecommerce
+
+#  gateway-service:
+#    container_name: gateway-service
+#    image: gateway-service
+#    build: ./server/gateway-service/.
+#    ports:
+#      - "5353:5353"
+#    depends_on:
+#      - eureka-server
+#      - user-service
+#      - product-service
+#    environment:
+#      # Important for clients to register with eureka
+#      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+#  auth-server:
+#    container_name: auth-server
+#    image: auth-server
+#    build: ./server/auth-server/.
+#    ports:
+#      - "5454:5454"
+#    depends_on:
+#      - user-service
+#    environment:
+#      # Important for clients to register with eureka
+#      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+#  product-service:
+#    container_name: product-service
+#    image: product-service
+#    build: ./server/product-service/.
+#    ports:
+#      - "3333:3333"
+#    depends_on:
+#      - postgresqldb
+#    environment:
+#      # Important for clients to register with eureka
+#      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+#  user-service:
+#    container_name: user-service
+#    image: user-service
+#    build: ./server/user-service/.
+#    ports:
+#      - "3335:3335"
+#    depends_on:
+#      - mongodb
+#    environment:
+#      # Important for clients to register with eureka
+#      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+#  eureka-server:
+#    container_name: eureka-server
+#    image: eureka-server
+#    build: ./server/eureka-server/.
+#    ports:
+#      - "8761:8761"
+#  mongodb:
+#    container_name: mongodb
+#    image: mongo
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: furkanergun
+#    ports:
+#      - "27017:27017"
+#  postgresqldb:
+#    image: postgres
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_DB=products
+networks:
+  spring-cloud-ecommerce:
+    external: true
