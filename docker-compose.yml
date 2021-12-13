@@ -52,6 +52,25 @@ services:
     networks:
       - spring-cloud-ecommerce
 
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./server/payment-service/Dockerfile
+    container_name: payment-service-container
+    restart: always
+    depends_on:
+      - redis-cache
+      - react-ui
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PORT=${PAYMENT_SERVICE_PORT}
+    expose:
+      - ${PAYMENT_SERVICE_PORT}
+    ports:
+      - ${PAYMENT_SERVICE_PORT}:${PAYMENT_SERVICE_PORT}
+    networks:
+      - spring-cloud-ecommerce
+
   react-ui:
     build:
       context: .
