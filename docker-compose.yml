@@ -72,6 +72,16 @@ services:
     networks:
       - spring-cloud-ecommerce
 
+  hystrix-dashboard:
+    build:
+      context: .
+      dockerfile: ./server/hystrix-dashboard/Dockerfile
+    container_name: hystrix-dashboard-container
+    ports:
+      - "5454:5454"
+    networks:
+      - spring-cloud-ecommerce
+
   react-ui:
     build:
       context: .
@@ -102,9 +112,11 @@ services:
       - spring-cloud-ecommerce
 
   gateway-service:
+    build:
+      context: .
+      dockerfile: ./server/product-service/Dockerfile
     container_name: gateway-service
     image: gateway-service
-    build: ./server/gateway-service/.
     environment:
       - JWT_TOKEN=${JWT_TOKEN}
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -146,23 +158,6 @@ services:
     networks:
       - spring-cloud-ecommerce
 
-#  mongodb:
-#    container_name: mongodb
-#    image: mongo
-#    restart: always
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: furkanergun
-#    ports:
-#      - "27017:27017"
-#  postgresqldb:
-#    image: postgres
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      - POSTGRES_PASSWORD=postgres
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_DB=products
 networks:
   spring-cloud-ecommerce:
     external: true
