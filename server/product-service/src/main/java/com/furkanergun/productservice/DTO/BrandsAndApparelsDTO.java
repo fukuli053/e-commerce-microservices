@@ -13,4 +13,4 @@ import java.util.List;
 public class BrandsAndApparelsDTO implements Serializable {
     List<FilterAttributesDTO> brands;
     List<FilterAttributesDTO> apparels;
-}w
+}

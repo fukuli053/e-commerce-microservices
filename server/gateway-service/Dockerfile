@@ -1,4 +1,4 @@
 FROM openjdk:11
-ADD ./build/libs/*.jar gateway-server-0.0.1-SNAPSHOT.jar
-RUN bash -c 'touch /gateway-server-0.0.1-SNAPSHOT.jar'
-ENTRYPOINT ["java", "-jar", "/gateway-server-0.0.1-SNAPSHOT.jar"]
+ADD server/gateway-service/target/*.jar gs-gateway-0.1.0.jar
+RUN bash -c 'touch /gs-gateway-0.1.0.jar'
+ENTRYPOINT ["java", "-jar", "/gs-gateway-0.1.0.jar"]

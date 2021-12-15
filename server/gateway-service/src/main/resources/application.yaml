@@ -1,0 +1,21 @@
+server:
+    port: 5353
+
+#secret key - should be encrypted
+jwt:
+    secret: secretkey
+
+spring:
+    application:
+        name: api-gateway
+
+eureka:
+    client:
+        service-url:
+            default-zone: http://eureka-server:8761/eureka
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
