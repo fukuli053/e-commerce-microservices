@@ -39,7 +39,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_SCHEMA=${DB_SCHEMA}
-      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
       - PORT=${AUTHENTICATION_SERVICE_PORT}
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     links:
@@ -61,7 +60,6 @@ services:
       - redis-cache
       - react-ui
     environment:
-      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
       - PORT=${PAYMENT_SERVICE_PORT}
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     expose:
@@ -142,7 +140,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_SCHEMA=${DB_SCHEMA}
-      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
       - PORT=${PRODUCT_SERVICE_PORT}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_HOST=redis-cache
@@ -157,6 +154,30 @@ services:
       - ${PRODUCT_SERVICE_PORT}:${PRODUCT_SERVICE_PORT}
     networks:
       - spring-cloud-ecommerce
+
+  suggestion-search-service:
+    build:
+      context: .
+      dockerfile: ./server/suggestion-search-service/Dockerfile
+    container_name: suggestion-search-service-container
+    restart: always
+    depends_on:
+      - mysql-db
+      - redis-cache
+      - react-ui
+      - product-service
+      - auth-server
+      - payment-service
+    environment:
+      - PORT=${SUGGESTION_SEARCH_SERVICE_PORT}
+      - PRODUCT_SERVICE_URL=http://product-service:${PRODUCT_SERVICE_PORT}
+    expose:
+      - ${SUGGESTION_SEARCH_SERVICE_PORT}
+    ports:
+      - ${SUGGESTION_SEARCH_SERVICE_PORT}:${SUGGESTION_SEARCH_SERVICE_PORT}
+    networks:
+      - spring-cloud-ecommerce
+
 
 networks:
   spring-cloud-ecommerce:
