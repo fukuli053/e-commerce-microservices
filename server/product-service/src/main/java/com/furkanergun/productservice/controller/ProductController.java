@@ -29,9 +29,7 @@ public class ProductController {
     LoadFakeDataService loadFakeDataService;
 
     public void fillWithTestData() {
-        if (Objects.equals(environment.getProperty("ACTIVE_PROFILE"), "dev")) {
-            loadFakeDataService.loadTestData();
-        }
+        loadFakeDataService.loadTestData();
     }
 
     @GetMapping(value = "/products", params = "q")
