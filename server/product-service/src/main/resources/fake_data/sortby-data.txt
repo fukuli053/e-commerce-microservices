@@ -1,4 +1,4 @@
-1|What's New
-2|Popularity
-3|Price: Low To High
-4|Price: High To Low
+1|En Yeniler
+2|Popülerlik
+3|Fiyat: Artan
+4|Fiyat: Azalan

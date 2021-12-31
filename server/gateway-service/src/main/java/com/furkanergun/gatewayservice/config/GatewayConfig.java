@@ -15,14 +15,15 @@ public class GatewayConfig {
 
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
-        return builder.routes().route("auth", r -> r.path("/auth/**")
-                .filters(f -> f.filter(filter).rewritePath("/auth/(?<segment>.*)", "/$\\{segment}"))
-                .uri("lb://AUTH-SERVER"))
+        return builder.routes()
+                .route("auth", r -> r.path("/auth/**")
+                        .filters(f -> f.rewritePath("/auth/(?<segment>.*)", "/$\\{segment}"))
+                        .uri("lb://AUTH-SERVER"))
                 .route("products", r -> r.path("/products/**")
-                        .filters(f -> f.filter(filter).rewritePath("/products/(?<segment>.*)", "/$\\{segment}"))
+                        .filters(f -> f.rewritePath("/products/(?<segment>.*)", "/$\\{segment}"))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("suggestion-service", r -> r.path("/suggestion/**")
-                        .filters(f -> f.filter(filter).rewritePath("/suggestion/(?<segment>.*)", "/$\\{segment}"))
+                        .filters(f -> f.rewritePath("/suggestion/(?<segment>.*)", "/$\\{segment}"))
                         .uri("lb://SUGGESTION-SEARCH-SERVICE"))
                 .build();
     }
